@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ludo Step 1</title>
+
+<style>
+body{
+  text-align:center;
+  font-family:Arial;
+  background:#111;
+  color:white;
+}
+
+.board{
+  display:grid;
+  grid-template-columns: repeat(15, 30px);
+  grid-template-rows: repeat(15, 30px);
+  gap:1px;
+  justify-content:center;
+  margin-top:20px;
+}
+
+.cell{
+  width:30px;
+  height:30px;
+  background:#333;
+}
+
+/* Home areas */
+.red{ background:red; }
+.green{ background:green; }
+.blue{ background:blue; }
+.yellow{ background:yellow; }
+
+/* Safe path */
+.path{ background:#555; }
+
+.token{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+}
+</style>
+
+</head>
+<body>
+
+<h1>🎮 Ludo Game - Step 1</h1>
+
+<div class="board" id="board"></div>
+
+<script>
+let board = document.getElementById("board");
+
+// create 15x15 grid (Ludo board)
+for(let i=0;i<225;i++){
+  let cell = document.createElement("div");
+  cell.className = "cell";
+  board.appendChild(cell);
+}
+
+// color homes (basic representation)
+
+// Red home
+for(let i=0;i<7;i++){
+  board.children[i].classList.add("red");
+}
+
+// Green home
+for(let i=210;i<225;i++){
+  board.children[i].classList.add("green");
+}
+
+// Blue home
+for(let i=0;i<105;i+=15){
+  board.children[i].classList.add("blue");
+}
+
+// Yellow home
+for(let i=14;i<225;i+=15){
+  board.children[i].classList.add("yellow");
+}
+
+// basic path line (center)
+for(let i=7;i<8;i++){
+  for(let j=0;j<225;j+=15){
+    board.children[j+i].classList.add("path");
+  }
+}
+</script>
+
+</body>
+</html>
