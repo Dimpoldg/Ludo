@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ludo Step 1</title>
+<title>Final Ludo</title>
 
 <style>
 body{
@@ -15,7 +15,6 @@ body{
 .board{
   display:grid;
   grid-template-columns: repeat(15, 30px);
-  grid-template-rows: repeat(15, 30px);
   gap:1px;
   justify-content:center;
   margin-top:20px;
@@ -25,69 +24,142 @@ body{
   width:30px;
   height:30px;
   background:#333;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-/* Home areas */
+.token{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+}
+
 .red{ background:red; }
 .green{ background:green; }
 .blue{ background:blue; }
 .yellow{ background:yellow; }
 
-/* Safe path */
-.path{ background:#555; }
-
-.token{
-  width:100%;
-  height:100%;
-  border-radius:50%;
+button{
+  padding:10px 20px;
+  margin-top:15px;
 }
 </style>
 
 </head>
 <body>
 
-<h1>🎮 Ludo Game - Step 1</h1>
+<h1>🎲 FINAL LUDO GAME</h1>
+
+<button onclick="rollDice()">Roll Dice</button>
+<p id="dice"></p>
 
 <div class="board" id="board"></div>
 
 <script>
 let board = document.getElementById("board");
 
-// create 15x15 grid (Ludo board)
+// create grid
 for(let i=0;i<225;i++){
   let cell = document.createElement("div");
   cell.className = "cell";
   board.appendChild(cell);
 }
 
-// color homes (basic representation)
+// REALISTIC PATH (zig-zag simplified)
+let path = [];
 
-// Red home
-for(let i=0;i<7;i++){
-  board.children[i].classList.add("red");
-}
-
-// Green home
-for(let i=210;i<225;i++){
-  board.children[i].classList.add("green");
-}
-
-// Blue home
-for(let i=0;i<105;i+=15){
-  board.children[i].classList.add("blue");
-}
-
-// Yellow home
-for(let i=14;i<225;i+=15){
-  board.children[i].classList.add("yellow");
-}
-
-// basic path line (center)
-for(let i=7;i<8;i++){
-  for(let j=0;j<225;j+=15){
-    board.children[j+i].classList.add("path");
+// create zig-zag path
+for(let i=0;i<15;i++){
+  if(i%2==0){
+    for(let j=0;j<15;j++){
+      path.push(i*15 + j);
+    }
+  }else{
+    for(let j=14;j>=0;j--){
+      path.push(i*15 + j);
+    }
   }
 }
+
+// players
+let pos = [0,0,0,0];
+let inGame = [false,false,false,false]; // token entered?
+let turn = 0;
+
+let colors = ["red","green","blue","yellow"];
+
+// draw
+function draw(){
+  let cells = document.getElementsByClassName("cell");
+
+  for(let c of cells){
+    c.innerHTML = "";
+  }
+
+  for(let i=0;i<4;i++){
+    if(!inGame[i]) continue;
+
+    let p = pos[i];
+
+    if(p >= path.length-1){
+      alert("🎉 Player " + (i+1) + " Wins!");
+      pos = [0,0,0,0];
+      inGame = [false,false,false,false];
+      return;
+    }
+
+    let token = document.createElement("div");
+    token.className = "token " + colors[i];
+    cells[path[p]].appendChild(token);
+  }
+}
+
+// kill system
+function checkKill(current){
+  let currentPos = pos[current];
+
+  for(let i=0;i<4;i++){
+    if(i !== current && pos[i] === currentPos && inGame[i]){
+      pos[i] = 0;
+      inGame[i] = false;
+      alert("💥 Player " + (current+1) + " killed Player " + (i+1));
+    }
+  }
+}
+
+// dice
+function rollDice(){
+  let dice = Math.floor(Math.random()*6)+1;
+  document.getElementById("dice").innerHTML = "Dice: " + dice;
+
+  // start token only on 6
+  if(!inGame[turn]){
+    if(dice === 6){
+      inGame[turn] = true;
+      pos[turn] = 0;
+    }
+  }else{
+    pos[turn] += dice;
+  }
+
+  if(pos[turn] >= path.length){
+    pos[turn] = path.length - 1;
+  }
+
+  if(inGame[turn]){
+    checkKill(turn);
+  }
+
+  // extra turn on 6
+  if(dice !== 6){
+    turn = (turn + 1) % 4;
+  }
+
+  draw();
+}
+
+draw();
 </script>
 
 </body>
